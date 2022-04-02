@@ -5,10 +5,10 @@ import Page from "src/components/layout/templates/generic-page";
 import { Asset } from "src/entities/asset";
 import { selectAssets } from "src/store/asset";
 import {
-  createCurrencyService,
-  updateCurrencyService,
-  deleteCurrencyService,
-} from "src/services/currency";
+  createAssetService,
+  updateAssetService,
+  deleteAssetService,
+} from "src/services/asset";
 import { ChildProps } from "src/components/bars/action-bar";
 import Stamp from "src/components/stamp";
 import { formConfig } from "./form-config";
@@ -28,7 +28,7 @@ const AssetPage = () => {
 
   const AssetEntriesStamp = (props: ChildProps) => {
     const onClick = () => {
-      navigate(`asset/${assetId}`);
+      navigate(`/asset/${assetId}`);
     };
 
     return (
@@ -47,9 +47,9 @@ const AssetPage = () => {
       formConfig={formConfig}
       items={assets}
       tableFields={tableFields}
-      createService={createCurrencyService}
-      updateService={updateCurrencyService}
-      deleteService={deleteCurrencyService}
+      createService={createAssetService}
+      updateService={updateAssetService}
+      deleteService={deleteAssetService}
       actionStamps={AssetEntriesStamp}
       onChangeItem={onChangeItem}
     />

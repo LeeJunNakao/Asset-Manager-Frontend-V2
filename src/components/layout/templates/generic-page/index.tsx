@@ -5,13 +5,13 @@ import ActionBar, {
   ActionMode,
   ChildProps,
 } from "src/components/bars/action-bar";
-import Table from "src/components/table";
+import Table, { Props as TableProps } from "src/components/table";
 import { Payload } from "react-mount-form";
 import { ToastContainer } from "react-toastify";
 import { GenericHooks, handleSetMode } from "./hooks";
 import { Wrapper } from "./styles";
 
-type Props<T> = {
+type Props<T> = Pick<TableProps<T>, "masks"> & {
   formConfig: any;
   items: T[];
   createService: any;
@@ -63,6 +63,7 @@ const Page = <T extends Payload>(props: Props<T>) => {
           hide={mode !== ActionMode.INITIAL && mode !== ActionMode.DELETE}
           onChange={onChange}
           value={item}
+          masks={props.masks}
         />
         <ToastContainer autoClose={false} />
       </Wrapper>

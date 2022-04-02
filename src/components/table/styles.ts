@@ -49,3 +49,10 @@ export const Row = styled.div<RowProps>`
     cursor: pointer;
   }
 `;
+
+export const EmptyContent = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+`;

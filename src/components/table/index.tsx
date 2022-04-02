@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Wrapper, Header, Content, Row } from "./styles";
+import { Wrapper, Header, Content, Row, EmptyContent } from "./styles";
 
-type Props<T> = {
+export type Props<T> = {
   fields: string[];
   data?: T[];
   hide?: boolean;
   value: T | null;
   onChange: (value: T | null) => void;
+  masks?: { [field: string]: (v: any) => string };
 };
 
 type Data = {
@@ -17,8 +18,14 @@ const Table = <T extends Data>(props: Props<T>) => {
   const headerItems = props.fields.map((i) => <span>{i}</span>);
 
   const parseRowData = (item: T) => {
-    const data = props.fields.map((field) => item[field]);
-    const elementDOM = data.map((value) => <span>{value}</span>);
+    const data = props.fields.map((field) => [field, item[field]]);
+    const elementDOM = data.map(([field, value]) => {
+      if (props.masks && props.masks[field]) {
+        const mask = props.masks[field];
+        return <span>{mask(value)}</span>;
+      }
+      return <span>{value}</span>;
+    });
 
     return (
       <Row
@@ -54,7 +61,9 @@ const Table = <T extends Data>(props: Props<T>) => {
   return (
     <Wrapper onBlur={handleBlur} tabIndex={0} hide={props.hide || false}>
       <Header columns={props.fields.length}>{headerItems}</Header>
-      <Content>{rows}</Content>
+      <Content>
+        {props.data?.length ? rows : <EmptyContent>NO DATA</EmptyContent>}
+      </Content>
     </Wrapper>
   );
 };
