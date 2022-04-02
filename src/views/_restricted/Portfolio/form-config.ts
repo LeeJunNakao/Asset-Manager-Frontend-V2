@@ -1,9 +1,6 @@
 import { FormBuilderProps, Payload, SelectOption } from "react-mount-form";
 
-export const configForm = (
-  formContent: Payload | null,
-  options: SelectOption[]
-): FormBuilderProps => ({
+export const configForm = (options: SelectOption[]): FormBuilderProps => ({
   title: "Add Portfolio",
   config: [
     {
@@ -30,5 +27,4 @@ export const configForm = (
       },
     },
   ],
-  formContent: formContent || undefined,
 });
