@@ -14,12 +14,9 @@ import { formConfig } from "./form-config";
 import { Nullable } from "src/utils/ts/types";
 import { useRef } from "react";
 import { Payload } from "react-mount-form";
+import { fromRawToFormatedWithCode } from "src/utils/parser/currency";
 import { parseAssetEntry } from "./hook";
-import { TotalWrapper } from "./styles";
-import {
-  fromRawToFormated,
-  fromRawToFormatedWithCode,
-} from "src/utils/parser/currency";
+import { Wrapper, TotalWrapper } from "./styles";
 
 const AssetEntriesPage = () => {
   const params = useParams();
@@ -46,34 +43,36 @@ const AssetEntriesPage = () => {
   const total = quantity * averagePrice;
 
   return (
-    <Page
-      formConfig={formConfig}
-      items={parsedAssetEntries}
-      tableFields={tableFields}
-      createService={createAssetEntryService(selectedCurrency, assetId)}
-      updateService={updateAssetEntryService(
-        selectedCurrency,
-        assetId,
-        assetEntryId
-      )}
-      deleteService={deleteAssetEntryService}
-      onChangeItem={onChangeItem}
-      headerMasks={headerMasks}
-      bottomSlot={
-        <TotalWrapper>
-          <span>TOTAL</span>
-          <span>{quantity}</span>
-          <span>
-            {selectedCurrency &&
-              fromRawToFormatedWithCode(averagePrice, selectedCurrency)}
-          </span>
-          <span>
-            {selectedCurrency &&
-              fromRawToFormatedWithCode(total, selectedCurrency)}
-          </span>
-        </TotalWrapper>
-      }
-    />
+    <Wrapper>
+      <Page
+        formConfig={formConfig}
+        items={parsedAssetEntries}
+        tableFields={tableFields}
+        createService={createAssetEntryService(selectedCurrency, assetId)}
+        updateService={updateAssetEntryService(
+          selectedCurrency,
+          assetId,
+          assetEntryId
+        )}
+        deleteService={deleteAssetEntryService}
+        onChangeItem={onChangeItem}
+        headerMasks={headerMasks}
+        bottomSlot={
+          <TotalWrapper>
+            <span>TOTAL</span>
+            <span>{quantity}</span>
+            <span>
+              {selectedCurrency &&
+                fromRawToFormatedWithCode(averagePrice, selectedCurrency)}
+            </span>
+            <span>
+              {selectedCurrency &&
+                fromRawToFormatedWithCode(total, selectedCurrency)}
+            </span>
+          </TotalWrapper>
+        }
+      />
+    </Wrapper>
   );
 };
 
