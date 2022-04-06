@@ -8,6 +8,7 @@ export type Props<T> = {
   value: T | null;
   onChange: (value: T | null) => void;
   masks?: { [field: string]: (v: any) => string };
+  headerMasks?: { [field: string]: (v: any) => string };
 };
 
 type Data = {
@@ -15,7 +16,11 @@ type Data = {
 };
 
 const Table = <T extends Data>(props: Props<T>) => {
-  const headerItems = props.fields.map((i) => <span>{i}</span>);
+  const headerItems = props.fields.map((i) => (
+    <span>
+      {props.headerMasks && props.headerMasks[i] ? props.headerMasks[i](i) : i}
+    </span>
+  ));
 
   const parseRowData = (item: T) => {
     const data = props.fields.map((field) => [field, item[field]]);

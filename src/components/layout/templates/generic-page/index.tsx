@@ -11,7 +11,7 @@ import { ToastContainer } from "react-toastify";
 import { GenericHooks, handleSetMode } from "./hooks";
 import { Wrapper } from "./styles";
 
-type Props<T> = Pick<TableProps<T>, "masks"> & {
+type Props<T> = Pick<TableProps<T>, "masks" | "headerMasks"> & {
   formConfig: any;
   items: T[];
   createService: any;
@@ -20,6 +20,7 @@ type Props<T> = Pick<TableProps<T>, "masks"> & {
   tableFields: string[];
   onChangeItem?: (item: T) => void;
   actionStamps?: React.FC<ChildProps>;
+  bottomSlot?: JSX.Element;
 };
 
 const Page = <T extends Payload>(props: Props<T>) => {
@@ -64,8 +65,10 @@ const Page = <T extends Payload>(props: Props<T>) => {
           onChange={onChange}
           value={item}
           masks={props.masks}
+          headerMasks={props.headerMasks}
         />
         <ToastContainer autoClose={false} />
+        {props.bottomSlot}
       </Wrapper>
     </Layout>
   );

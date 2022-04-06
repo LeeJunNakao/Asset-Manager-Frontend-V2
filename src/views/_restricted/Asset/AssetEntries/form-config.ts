@@ -41,8 +41,8 @@ export const formConfig = {
         },
         props: {
           options: [
-            { value: true, label: "Purchase" },
-            { value: false, label: "Sell" },
+            { value: "Purchase", label: "Purchase" },
+            { value: "Sell", label: "Sell" },
           ],
         },
       },

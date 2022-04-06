@@ -1,21 +1,30 @@
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Page from "src/components/layout/templates/generic-page";
-import { getGroupedEntries, selectAsset } from "src/store/asset";
+import { getGroupedEntries } from "src/store/asset";
 import { getSelectedCurrency } from "src/store/currency";
 import {
   createAssetEntryService,
   updateAssetEntryService,
   deleteAssetEntryService,
+  getAssetQuantity,
+  getAveragePrice,
 } from "src/services/asset/asset-entries";
 import { formConfig } from "./form-config";
 import { Nullable } from "src/utils/ts/types";
-import { useState } from "react";
+import { useRef } from "react";
 import { Payload } from "react-mount-form";
+import { parseAssetEntry } from "./hook";
+import { TotalWrapper } from "./styles";
+import {
+  fromRawToFormated,
+  fromRawToFormatedWithCode,
+} from "src/utils/parser/currency";
 
 const AssetEntriesPage = () => {
   const params = useParams();
-  const [assetEntryId, setAssetEntryId] = useState<Nullable<number>>(null);
+  const assetEntryId = useRef<Nullable<number>>(null);
+  const setAssetEntryId = (id: number) => (assetEntryId.current = id);
   const assetId = Number(params.id);
 
   const selectedCurrency = useSelector(getSelectedCurrency);
@@ -23,26 +32,18 @@ const AssetEntriesPage = () => {
   const assetEntries =
     (entriesByCurency ? entriesByCurency[Number(selectedCurrency?.id)] : []) ||
     [];
+  const parsedAssetEntries = parseAssetEntry(assetEntries, selectedCurrency);
 
-  const formatValue = (v: number) => {
-    const decimal = selectedCurrency?.decimal;
-    if (decimal) {
-      return `${String((v / 10 ** decimal).toFixed(decimal))}`;
-    }
-    return String(v);
-  };
-  const parsedAssetEntries = assetEntries.map((a) => ({
-    ...a,
-    value: formatValue(a.value),
-  }));
   const tableFields = ["date", "quantity", "value", "is_purchase"];
-  const tableMasks = {
-    is_purchase: (v: boolean) => (v ? "Purchase" : "Sell"),
-  };
+  const headerMasks = { is_purchase: (_v: string) => "type" };
 
   const onChangeItem = (assetEntry: Nullable<Payload>) => {
     setAssetEntryId(assetEntry?.id);
   };
+
+  const quantity = getAssetQuantity(assetEntries);
+  const averagePrice = getAveragePrice(assetEntries);
+  const total = quantity * averagePrice;
 
   return (
     <Page
@@ -56,8 +57,22 @@ const AssetEntriesPage = () => {
         assetEntryId
       )}
       deleteService={deleteAssetEntryService}
-      masks={tableMasks}
       onChangeItem={onChangeItem}
+      headerMasks={headerMasks}
+      bottomSlot={
+        <TotalWrapper>
+          <span>TOTAL</span>
+          <span>{quantity}</span>
+          <span>
+            {selectedCurrency &&
+              fromRawToFormatedWithCode(averagePrice, selectedCurrency)}
+          </span>
+          <span>
+            {selectedCurrency &&
+              fromRawToFormatedWithCode(total, selectedCurrency)}
+          </span>
+        </TotalWrapper>
+      }
     />
   );
 };

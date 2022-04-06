@@ -28,7 +28,24 @@ export const Header = styled.div<HeaderProps>`
   }
 `;
 
-export const Content = styled.div``;
+export const Content = styled.div`
+  max-height: 300px;
+  overflow: auto;
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 20px;
+    border: 1px solid white;
+  }
+`;
 
 type RowProps = {
   selected: boolean;

@@ -30,9 +30,9 @@ export const onSubmitHook =
     } as unknown as T;
 
     if (args.mode === ActionMode.ADD)
-      args.createService(args.dispatch, payload, notifyError);
+      await args.createService(args.dispatch, payload, notifyError);
     if (args.mode === ActionMode.EDIT)
-      args.updateService(args.dispatch, payload, notifyError);
+      await args.updateService(args.dispatch, payload, notifyError);
 
     args.setMode(ActionMode.INITIAL);
     args.setItem(null);
