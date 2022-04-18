@@ -13,7 +13,7 @@ import {
   removeAssetEntry,
 } from "src/store/asset";
 import { Nullable, Override } from "src/utils/ts/types";
-import { groupBy } from "src/utils/parser/array";
+import { fromRawToFormated } from "src/utils/parser/currency";
 import AvgPriceCalculator from "src/utils/parser/avg-price-calculator";
 
 type AssetEntryFormData = {
@@ -24,10 +24,10 @@ type AssetEntryFormData = {
   user_id: number;
 };
 
-type GroupedEntries = {
-  [currencyId: string | number]: AssetEntry[];
+export type GroupedEntries = {
+  [currencyId: string | number]: Nullable<AssetEntry[]>;
 };
-type GroupedData<T> = {
+export type GroupedData<T> = {
   [assetId: string]: T;
 };
 
@@ -124,4 +124,45 @@ export const getAveragePrice = (entries: AssetEntry[]): number => {
   const calculator = new AvgPriceCalculator(parsedEntries);
 
   return Number(calculator.calculate().toFixed(0));
+};
+
+export const parseAssetEntries = (
+  assets: Asset[],
+  groupedEntries: GroupedData<GroupedEntries>,
+  selectedCurrency: Nullable<Currency>
+) => {
+  const setEntries = (a: Asset) => {
+    return {
+      ...a,
+      entries: groupedEntries[a.id][selectedCurrency?.id || 0] || [],
+    };
+  };
+
+  const setQuantity = (a: ReturnType<typeof setEntries>) => ({
+    ...a,
+    quantity: getAssetQuantity(a.entries),
+  });
+
+  const setAvgPrice = (a: ReturnType<typeof setQuantity>) => ({
+    ...a,
+    price: getAveragePrice(a.entries),
+  });
+
+  const setTotal = (a: ReturnType<typeof setAvgPrice>) => ({
+    ...a,
+    total: a.price * a.quantity,
+  });
+
+  const formatValues = (a: ReturnType<typeof setTotal>) => ({
+    ...a,
+    price: fromRawToFormated(a.price, selectedCurrency?.decimal || 0),
+    total: fromRawToFormated(a.total, selectedCurrency?.decimal || 0),
+  });
+
+  return assets
+    .map(setEntries)
+    .map(setQuantity)
+    .map(setAvgPrice)
+    .map(setTotal)
+    .map(formatValues);
 };

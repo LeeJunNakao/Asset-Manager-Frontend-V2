@@ -8,6 +8,7 @@ import AssetEntries from "src/views/_restricted/Asset/AssetEntries";
 import Currency from "src/views/_restricted/Currency";
 import Porfolio from "src/views/_restricted/Portfolio";
 import NotFound from "src/views/NotFound";
+import PorfolioDetails from "src/views/_restricted/Portfolio/Details";
 import { requestData } from "src/services/setup";
 
 const RestrictedRoutes = () => {
@@ -28,6 +29,7 @@ const RestrictedRoutes = () => {
         <Route path="/asset/:id" element={<AssetEntries />} />
         <Route path="/currency" element={<Currency />} />
         <Route path="/portfolio" element={<Porfolio />} />
+        <Route path="/portfolio/:id" element={<PorfolioDetails />} />
         <Route path="*" element={<NotFound />} />
       </React.Fragment>
     </Routes>

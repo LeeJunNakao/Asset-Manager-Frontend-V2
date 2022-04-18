@@ -2,26 +2,11 @@ import styled from "styled-components";
 import { Row, Header } from "src/components/table/styles";
 
 export const Wrapper = styled.div`
-  ${Header} {
+  ${Header}, ${Row} {
     & > span {
       display: flex;
       justify-content: center;
     }
-
-    /* & > span:last-child {
-      justify-content: flex-start;
-    } */
-  }
-
-  ${Row} {
-    & > span {
-      display: flex;
-      justify-content: center;
-    }
-    /* 
-    & > span:last-child {
-      justify-content: flex-start;
-    } */
   }
 `;
 
