@@ -1,6 +1,10 @@
 import React from "react";
 import { Dispatch } from "redux";
-import { Asset, AssetEntry } from "src/entities/asset";
+import {
+  Asset,
+  AssetEntry,
+  AssetEntryRequestPayload,
+} from "src/entities/asset";
 import { Currency } from "src/entities/currency";
 import {
   createAssetEntry,
@@ -15,6 +19,7 @@ import {
 import { Nullable, Override } from "src/utils/ts/types";
 import { fromRawToFormated } from "src/utils/parser/currency";
 import AvgPriceCalculator from "src/utils/parser/avg-price-calculator";
+import { toISODate, sortByDate } from "src/utils/parser/date";
 
 type AssetEntryFormData = {
   date: string;
@@ -165,4 +170,44 @@ export const parseAssetEntries = (
     .map(setAvgPrice)
     .map(setTotal)
     .map(formatValues);
+};
+
+export const sortAssetEntries = (entries: AssetEntryRequestPayload) => {
+  const parseDate = (entry: AssetEntry) => ({
+    ...entry,
+    date: new Date(entry.date),
+  });
+
+  const parseEntriesDate = ([assetId, assetEntries]: [string, AssetEntry[]]): [
+    number,
+    Array<ReturnType<typeof parseDate>>
+  ] => {
+    return [Number(assetId), assetEntries.map(parseDate)];
+  };
+
+  const sortEntries = ([assetId, assetEntries]: ReturnType<
+    typeof parseEntriesDate
+  >): [Asset["id"], ReturnType<typeof parseEntriesDate>[1]] => [
+    assetId,
+    assetEntries.sort(sortByDate),
+  ];
+
+  const parseEntriesDateToISO = ([assetId, assetEntries]: ReturnType<
+    typeof sortEntries
+  >) => {
+    const parseDateToISO = (
+      entry: ReturnType<typeof sortEntries>[1][number]
+    ) => ({
+      ...entry,
+      date: toISODate(entry.date),
+    });
+    return [assetId, (assetEntries as any[]).map(parseDateToISO)];
+  };
+
+  const sortedEntries = Object.entries(entries)
+    .map(parseEntriesDate)
+    .map(sortEntries)
+    .map(parseEntriesDateToISO);
+
+  return Object.fromEntries(sortedEntries);
 };

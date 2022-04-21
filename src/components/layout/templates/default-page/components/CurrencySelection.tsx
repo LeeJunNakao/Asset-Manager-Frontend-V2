@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Form from "src/components/form";
 import {
   selectCurrencies,
-  getSelectedCurrency,
+  selectCurrentCurrency,
   setSelectedCurrency,
 } from "src/store/currency";
 import { formatProps } from "../hooks";
@@ -13,7 +13,7 @@ const CurrencySelection = () => {
   const dispatch = useDispatch();
 
   const currencyOptions = useSelector(selectCurrencies);
-  const selectedCurrency = useSelector(getSelectedCurrency);
+  const selectedCurrency = useSelector(selectCurrentCurrency);
 
   const formatedProps = formatProps(
     currencyOptions.map((c) => ({ value: c.id, label: c.code }))

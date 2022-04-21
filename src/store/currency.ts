@@ -45,7 +45,8 @@ export const currencySlice = createSlice({
 
 export const selectCurrencies = (state: any) =>
   (state.currency as State).currencies;
-export const getSelectedCurrency = (state: any) => {
+
+export const selectCurrentCurrency = (state: any) => {
   return (state.currency as State).selectedCurrency;
 };
 export const {

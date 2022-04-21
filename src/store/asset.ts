@@ -1,16 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  Asset,
-  AssetEntry,
-  AssetEntryRequestPayload,
-} from "src/entities/asset";
+import { Asset, AssetEntryRequestPayload } from "src/entities/asset";
 import deepcopy from "deepcopy";
-import { toISODate, sortByDate } from "src/utils/parser/date";
-import AvgPriceCalculator, {
-  Item,
-} from "src/utils/parser/avg-price-calculator";
-import { groupBy } from "src/utils/parser/array";
-import { Currency } from "src/entities/currency";
+import { sortAssetEntries } from "src/services/asset/asset-entries";
 
 type State = {
   assets: Asset[];
@@ -18,36 +9,6 @@ type State = {
   assetsCurrentPrice: {
     [assetId: Asset["code"]]: number;
   };
-};
-type GroupedEntries = {
-  [currencyId: string | number]: AssetEntry[];
-};
-type GroupedData<T> = {
-  [assetId: string]: T;
-};
-
-const sortAssetEntries = (entries: AssetEntryRequestPayload) => {
-  const sortedEntries = Object.entries(entries)
-    .map(([assetId, assetEntries]) => [
-      assetId,
-      assetEntries.map((entry) => ({
-        ...entry,
-        date: new Date(entry.date),
-      })),
-    ])
-    .map(([assetId, assetEntries]) => [
-      assetId,
-      (assetEntries as any[]).sort(sortByDate),
-    ])
-    .map(([assetId, assetEntries]) => [
-      assetId,
-      (assetEntries as any[]).map((entry) => ({
-        ...entry,
-        date: toISODate(entry.date),
-      })),
-    ]);
-
-  return Object.fromEntries(sortedEntries);
 };
 
 export const assetSlice = createSlice({
@@ -119,47 +80,11 @@ export const assetSlice = createSlice({
 });
 
 export const selectAssets = (state: any) => (state.asset as State).assets;
-export const selectAssetsByIds = (assetsIds: Asset["id"][]) => (state: any) =>
-  (state.asset as State).assets.filter((a: Asset) => assetsIds.includes(a.id));
-export const selectAsset = (state: any) => (id: number) =>
-  state.asset.assets.find((i: Asset) => i.id === id);
-export const selectEntries = (state: any): AssetEntryRequestPayload =>
+
+export const selectAssetEntries = (state: any) =>
   (state.asset as State).assetEntries;
-export const getGroupedEntries = (state: any): GroupedData<GroupedEntries> => {
-  const entries = selectEntries(state);
 
-  const groupedEntries = Object.entries(entries).map(([assetId, entries]) => [
-    assetId,
-    groupBy(entries, "currency_id"),
-  ]);
-
-  return Object.fromEntries(groupedEntries);
-};
-export const getAssetAvgPrice =
-  (state: any) =>
-  (assetId: Asset["id"], currencyId: Currency["id"]): number => {
-    const groupedAssets = getGroupedEntries(state)[assetId];
-    const entries = (groupedAssets && groupedAssets[currencyId]) || [];
-    const parsedEntries = entries.map((e) => ({
-      ...e,
-      date: new Date(e.date),
-      isPurchase: e.is_purchase,
-    })) as Item[];
-    return new AvgPriceCalculator(parsedEntries).calculate();
-  };
-export const getAssetQuantity =
-  (state: any) =>
-  (assetId: Asset["id"], currencyId: Currency["id"]): number => {
-    const groupedAssets = getGroupedEntries(state)[assetId];
-    const entries = (groupedAssets && groupedAssets[currencyId]) || [];
-    const sumResult = entries.reduce((acc, curr) => {
-      const parseQuantity = curr.is_purchase ? curr.quantity : -curr.quantity;
-      return acc + parseQuantity;
-    }, 0);
-
-    return sumResult;
-  };
-export const getAssetCurrentPrice =
+export const selectAssetCurrentPrice =
   (state: any) => (assetCode: Asset["code"]) => {
     return (state.asset as State).assetsCurrentPrice[assetCode];
   };

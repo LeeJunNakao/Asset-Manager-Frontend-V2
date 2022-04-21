@@ -1,7 +1,13 @@
 import { Dispatch } from "redux";
-import { Asset } from "src/entities/asset";
+import {
+  Asset,
+  AssetEntry,
+  AssetEntryRequestPayload,
+} from "src/entities/asset";
 import { createAsset, editAsset, deleteAsset } from "src/http-services/asset";
 import { addAsset, updateAsset, removeAsset } from "src/store/asset";
+import { groupBy } from "src/utils/parser/array";
+import { GroupedData, GroupedEntries } from "./asset-entries";
 
 export const createAssetService = async (
   dispatch: Dispatch,
@@ -40,4 +46,17 @@ export const deleteAssetService = async (
   } catch (error) {
     notify("Failed to delete");
   }
+};
+
+export const getAssetsByIds = (assets: Asset[], ids: Asset["id"][]) =>
+  assets.filter((a: Asset) => ids.includes(a.id));
+
+export const groupEntries = (
+  assetEntries: AssetEntryRequestPayload
+): GroupedData<GroupedEntries> => {
+  const groupedEntries = Object.entries(assetEntries).map(
+    ([assetId, entries]) => [assetId, groupBy(entries, "currency_id")]
+  );
+
+  return Object.fromEntries(groupedEntries);
 };

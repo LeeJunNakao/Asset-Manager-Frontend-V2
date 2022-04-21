@@ -8,19 +8,18 @@ const HomePage = () => {
 
   const parsedPortfolios = portfolios.map((p) => ({
     title: p.name,
-    assets: p.assets.map((a) => ({
-      id: a.code,
-      label: a.code,
-      value: a.total,
-    })),
+    value: p.assets.reduce((acc, curr) => acc + curr.total, 0),
+    id: p.name,
+    label: p.name,
   }));
 
   return (
     <Layout>
       <Wrapper>
-        {parsedPortfolios.map((p) => (
-          <PieChart title={p.title} data={p.assets} />
-        ))}
+        <PieChart
+          title="Portfolios by purchase price"
+          data={parsedPortfolios}
+        />
       </Wrapper>
     </Layout>
   );

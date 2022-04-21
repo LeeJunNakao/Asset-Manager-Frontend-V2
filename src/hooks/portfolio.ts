@@ -1,17 +1,14 @@
 import { selectPortfolios } from "src/store/portfolio";
-import {
-  selectAssetsByIds,
-  selectAssets,
-  getGroupedEntries,
-} from "src/store/asset";
-import { getSelectedCurrency } from "src/store/currency";
+import { selectAssetEntries, selectAssets } from "src/store/asset";
+import { selectCurrentCurrency } from "src/store/currency";
 import { useSelector } from "react-redux";
 import { Asset } from "src/entities/asset";
 import { Portfolio } from "src/entities/portfolio";
 import { parseAssetEntries } from "src/services/asset/asset-entries";
+import { getAssetsByIds, groupEntries } from "src/services/asset";
 
 const useAssetsByIds = (assetsIds: Asset["id"][]) =>
-  useSelector(selectAssetsByIds(assetsIds));
+  getAssetsByIds(useSelector(selectAssets), assetsIds);
 
 const useSetAssets = (p: Portfolio) => {
   const { assets_ids, ...porfolio } = {
@@ -24,9 +21,8 @@ const useSetAssets = (p: Portfolio) => {
 
 export const usePortfolios = () => {
   const portfolios = useSelector(selectPortfolios);
-  const assets = useSelector(selectAssets);
-  const groupedEntries = useSelector(getGroupedEntries);
-  const currency = useSelector(getSelectedCurrency);
+  const groupedEntries = groupEntries(useSelector(selectAssetEntries));
+  const currency = useSelector(selectCurrentCurrency);
 
   const porfoliosWithAssets = portfolios.map(useSetAssets);
 

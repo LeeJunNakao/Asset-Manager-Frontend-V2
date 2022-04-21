@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Page from "src/components/layout/templates/generic-page";
-import { getGroupedEntries } from "src/store/asset";
-import { getSelectedCurrency } from "src/store/currency";
+import { selectAssetEntries } from "src/store/asset";
+import { selectCurrentCurrency } from "src/store/currency";
 import {
   createAssetEntryService,
   updateAssetEntryService,
@@ -17,6 +17,7 @@ import { Payload } from "react-mount-form";
 import { fromRawToFormatedWithCode } from "src/utils/parser/currency";
 import { parseAssetEntry } from "./hook";
 import { Wrapper, TotalWrapper } from "./styles";
+import { groupEntries } from "src/services/asset";
 
 const AssetEntriesPage = () => {
   const params = useParams();
@@ -24,8 +25,10 @@ const AssetEntriesPage = () => {
   const setAssetEntryId = (id: number) => (assetEntryId.current = id);
   const assetId = Number(params.id);
 
-  const selectedCurrency = useSelector(getSelectedCurrency);
-  const entriesByCurency = useSelector(getGroupedEntries)[assetId];
+  const selectedCurrency = useSelector(selectCurrentCurrency);
+  const entriesByCurency = groupEntries(useSelector(selectAssetEntries))[
+    assetId
+  ];
   const assetEntries =
     (entriesByCurency ? entriesByCurency[Number(selectedCurrency?.id)] : []) ||
     [];
