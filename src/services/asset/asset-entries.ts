@@ -139,7 +139,9 @@ export const parseAssetEntries = (
   const setEntries = (a: Asset) => {
     return {
       ...a,
-      entries: groupedEntries[a.id][selectedCurrency?.id || 0] || [],
+      entries: groupedEntries[a.id]
+        ? groupedEntries[a.id][selectedCurrency?.id || 0] || []
+        : [],
     };
   };
 
