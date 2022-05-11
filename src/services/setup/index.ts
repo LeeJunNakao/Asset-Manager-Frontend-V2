@@ -11,18 +11,44 @@ import {
 } from "src/store/asset";
 import { setCurrencies, setSelectedCurrency } from "src/store/currency";
 import { setPortfolios } from "src/store/portfolio";
-import { getPrice } from "src/http-services/asset/consult-asset-price";
+import { getAssetsPrices } from "src/http-services/asset/search-asset-price";
 import store from "src/store/store";
+import { Asset } from "src/entities/asset";
+import _ from "lodash";
+import { toISODate } from "src/utils/parser/date";
 
 setInterceptor(store, client.client());
 
+type AssetInfoArr = [code: string, market?: string, currency?: string];
+
+const groupAssets = (assets: Asset[]) => {
+  const assetCodes = assets
+    .map((i) => i.code)
+    .map((i) => i.split(":") as AssetInfoArr);
+  return _.groupBy(assetCodes, 1);
+};
+
 export const requestData = async (dispatch: any, setIsLoading: any) => {
-  const fetchAssetsPrice = async (assetCode: string) => {
+  const fetchAssetsPrice = async (
+    market: string,
+    assetInfoArr: AssetInfoArr[]
+  ) => {
+    if (market === "undefined") return;
+
     try {
-      const price = await getPrice(assetCode);
-      dispatch(addAssetCurrentPrice({ code: assetCode, price }));
+      const assets = assetInfoArr.map((info) => info[0]);
+      const currency = assetInfoArr[0][2] as string;
+
+      const price = await getAssetsPrices({
+        assets,
+        source: market,
+        date: toISODate(new Date()),
+        currency,
+      });
+      console.log("AAAAAAAAAAAAAAAAA", price);
+      // dispatch(addAssetCurrentPrice({ code: assetCode, price }));
     } catch (error) {
-      dispatch(addAssetCurrentPrice({ code: assetCode, price: null }));
+      // dispatch(addAssetCurrentPrice({ code: assetCode, price: null }));
     }
   };
 
@@ -30,7 +56,10 @@ export const requestData = async (dispatch: any, setIsLoading: any) => {
     const response = await getAsset();
     dispatch(setAssets(response));
 
-    const promises = response.map((asset: any) => fetchAssetsPrice(asset.code));
+    const groupedAssets = groupAssets(response);
+    const promises = Object.entries(groupedAssets).map(
+      ([market, assetInfoArr]) => fetchAssetsPrice(market, assetInfoArr)
+    );
 
     await Promise.all(promises);
   };

@@ -47,6 +47,14 @@ const entityAxios = Axios.create({
   },
 });
 
+const searchAssetPriceAxios = Axios.create({
+  baseURL: process.env.REACT_APP_SEARCH_ASSET_PRICE,
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application/json",
+  },
+});
+
 entityAxios.interceptors.request.use(function (config: AxiosRequestConfig) {
   const token = localStorage.getItem("access_token") as string;
   const userId = localStorage.getItem("user_id") as string;
@@ -57,3 +65,4 @@ entityAxios.interceptors.request.use(function (config: AxiosRequestConfig) {
 
 export const authClient = makeService(authAxios);
 export const client = makeService(entityAxios);
+export const searchAssetPriceClient = makeService(searchAssetPriceAxios);
