@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import LoadingPage from "src/views/Loading";
 import Home from "src/views/_restricted/Home";
@@ -9,15 +8,33 @@ import Currency from "src/views/_restricted/Currency";
 import Porfolio from "src/views/_restricted/Portfolio";
 import NotFound from "src/views/NotFound";
 import PorfolioDetails from "src/views/_restricted/Portfolio/Details";
+import { useCurrency } from "src/hooks/currency";
 import { requestData } from "src/services/setup";
+import { useFetchData } from "src/hooks/fetch-data";
+import { useGlobalConfig } from "src/hooks/global-config";
 
 const RestrictedRoutes = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch();
+  const {
+    isLoading,
+    initialFetched,
+    startLoading,
+    endLoading,
+    notifyFetchEnd,
+  } = useGlobalConfig();
+
+  const fetchServices = useFetchData();
+  const { selectedCurrency } = useCurrency();
 
   useEffect(() => {
-    requestData(dispatch, setIsLoading);
+    requestData({ fetchServices, startLoading, endLoading, notifyFetchEnd });
   }, []);
+
+  useEffect(() => {
+    console.log({ initialFetched, selectedCurrency });
+    if (initialFetched && selectedCurrency) {
+      fetchServices.fetchAssetsPrices(selectedCurrency.code);
+    }
+  }, [selectedCurrency, initialFetched]);
 
   return isLoading ? (
     <LoadingPage />

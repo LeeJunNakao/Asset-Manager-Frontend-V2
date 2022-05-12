@@ -49,10 +49,6 @@ const entityAxios = Axios.create({
 
 const searchAssetPriceAxios = Axios.create({
   baseURL: process.env.REACT_APP_SEARCH_ASSET_PRICE,
-  headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Content-Type": "application/json",
-  },
 });
 
 entityAxios.interceptors.request.use(function (config: AxiosRequestConfig) {

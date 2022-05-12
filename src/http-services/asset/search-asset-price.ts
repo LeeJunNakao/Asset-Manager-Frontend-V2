@@ -2,9 +2,15 @@ import { searchAssetPriceClient as client } from "../client";
 
 type AssetPricesResponse = {
   [code: string]: {
-    closePrice: number;
-    closeDate: string;
-    currency: string;
+    data: null | {
+      closePrice: number;
+      closeDate: string;
+      currency: string;
+    };
+    error?: {
+      code: string;
+      message: string;
+    };
   };
 };
 
@@ -21,7 +27,6 @@ export const getAssetsPrices = async (
   const response = await client.get(`/asset-quote/search`, {
     params: { ...searchArgs, assets: `[${String(searchArgs.assets)}]` },
   });
-  const result = response.data;
 
-  return result.price;
+  return response.data;
 };

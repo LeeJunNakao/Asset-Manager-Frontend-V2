@@ -1,14 +1,18 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Asset, AssetEntryRequestPayload } from "src/entities/asset";
 import deepcopy from "deepcopy";
 import { sortAssetEntries } from "src/services/asset/asset-entries";
 
+type AssetsPrices = {
+  [currencyCode: string]: {
+    [assetCode: string]: number;
+  };
+};
+
 type State = {
   assets: Asset[];
   assetEntries: AssetEntryRequestPayload;
-  assetsCurrentPrice: {
-    [assetId: Asset["code"]]: number;
-  };
+  assetsCurrentPrice: AssetsPrices;
 };
 
 export const assetSlice = createSlice({
@@ -43,8 +47,24 @@ export const assetSlice = createSlice({
 
       state.assets = assets;
     },
-    addAssetCurrentPrice: (state, action) => {
-      state.assetsCurrentPrice[action.payload.code] = action.payload.price;
+    addAssetCurrentPrice: (
+      state,
+      action: PayloadAction<{
+        currencyCode: string;
+        assetCode: string;
+        price: number;
+      }>
+    ) => {
+      const { currencyCode, assetCode, price } = action.payload;
+      const updatedAssetPrice = {
+        ...state.assetsCurrentPrice,
+        [currencyCode]: {
+          ...state.assetsCurrentPrice[currencyCode],
+          [assetCode]: price,
+        },
+      };
+
+      state.assetsCurrentPrice = updatedAssetPrice;
     },
     setAssetEntries: (state, action) => {
       const entries: AssetEntryRequestPayload = deepcopy(action.payload);

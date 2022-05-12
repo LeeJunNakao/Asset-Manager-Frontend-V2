@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Portfolio } from "src/entities/portfolio";
+import { RootState } from "./store";
 
-interface State {
+type State = {
   portfolios: Portfolio[];
-}
+};
 
 export const portfolioSlice = createSlice({
   name: "portfolio",
@@ -38,12 +39,13 @@ export const portfolioSlice = createSlice({
   },
 });
 
-export const selectPortfolios = (state: any): Portfolio[] =>
+export const selectPortfolios = (state: RootState): Portfolio[] =>
   state.portfolio.portfolios;
-export const selectPortfolio = (portfolioId: Portfolio["id"]) => (state: any) =>
-  (state.portfolio.portfolios as Portfolio[]).find(
-    (p: Portfolio) => p.id === portfolioId
-  );
+export const selectPortfolio =
+  (portfolioId: Portfolio["id"]) => (state: RootState) =>
+    (state.portfolio.portfolios as Portfolio[]).find(
+      (p: Portfolio) => p.id === portfolioId
+    );
 
 export const { setPortfolios, updatePortfolio, addPortfolio, removePortfolio } =
   portfolioSlice.actions;
