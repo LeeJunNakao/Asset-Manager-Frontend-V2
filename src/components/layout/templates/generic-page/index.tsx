@@ -14,6 +14,7 @@ import { Wrapper } from "./styles";
 type Props<T> = Pick<TableProps<T>, "masks" | "headerMasks"> & {
   formConfig: any;
   items: T[];
+  selectedItemName?: string;
   createService: any;
   updateService: any;
   deleteService: any;
@@ -43,6 +44,11 @@ const Page = <T extends Payload>(props: Props<T>) => {
   return (
     <Layout>
       <Wrapper deletingMode={mode === ActionMode.DELETE}>
+        {props.selectedItemName && (
+          <div>
+            <h2>{props.selectedItemName}</h2>
+          </div>
+        )}
         <ActionBar
           addClick={handleSetMode(setMode, ActionMode.ADD)}
           editClick={handleSetMode(setMode, ActionMode.EDIT)}

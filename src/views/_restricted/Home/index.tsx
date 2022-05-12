@@ -4,7 +4,7 @@ import PieChart from "src/components/charts/Pie";
 import { Wrapper } from "./styles";
 
 const HomePage = () => {
-  const portfolios = usePortfolios();
+  const { portfolios } = usePortfolios();
 
   const parsedPortfolios = portfolios.map((p) => ({
     title: p.name,

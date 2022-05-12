@@ -31,5 +31,8 @@ export const usePortfolios = () => {
     assets: e.assets && parseAssetEntries(e.assets, groupedEntries, currency),
   }));
 
-  return portfoliosWithEntries;
+  const getPortfolio = (id: Portfolio["id"]) =>
+    portfolios.find((p) => p.id === id);
+
+  return { portfolios: portfoliosWithEntries, getPortfolio };
 };

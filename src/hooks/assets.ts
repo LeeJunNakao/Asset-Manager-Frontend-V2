@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import { Asset } from "src/entities/asset";
 import {
   selectAssets,
   selectAssetCurrentPrice,
@@ -8,8 +9,9 @@ import {
 
 export const useAssets = () => {
   const assets = useSelector(selectAssets);
+  const getAsset = (id: Asset["id"]) => assets.find((a) => a.id === id);
 
-  return { assets };
+  return { assets, getAsset };
 };
 
 export const useAssetPrice = () => {

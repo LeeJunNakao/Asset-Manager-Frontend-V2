@@ -21,5 +21,12 @@ export const useAssetDetails = () => {
     selectedCurrency
   );
 
-  return { portfolio, selectedCurrency, assets, groupedEntries, parsedAssets };
+  return {
+    portfolio,
+    selectedCurrency,
+    assets,
+    groupedEntries,
+    parsedAssets,
+    assetId: id,
+  };
 };

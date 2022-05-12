@@ -18,12 +18,15 @@ import { fromRawToFormatedWithCode } from "src/utils/parser/currency";
 import { parseAssetEntry } from "./hook";
 import { Wrapper, TotalWrapper } from "./styles";
 import { groupEntries } from "src/services/asset";
+import { useAssets } from "src/hooks/assets";
 
 const AssetEntriesPage = () => {
   const params = useParams();
+  const { getAsset } = useAssets();
   const assetEntryId = useRef<Nullable<number>>(null);
   const setAssetEntryId = (id: number) => (assetEntryId.current = id);
   const assetId = Number(params.id);
+  const asset = getAsset(assetId);
 
   const selectedCurrency = useSelector(selectCurrentCurrency);
   const entriesByCurency = groupEntries(useSelector(selectAssetEntries))[
@@ -48,6 +51,7 @@ const AssetEntriesPage = () => {
   return (
     <Wrapper>
       <Page
+        selectedItemName={asset?.name}
         formConfig={formConfig}
         items={parsedAssetEntries}
         tableFields={tableFields}
@@ -63,7 +67,7 @@ const AssetEntriesPage = () => {
         bottomSlot={
           <TotalWrapper>
             <span>TOTAL</span>
-            <span>{quantity}</span>
+            <span>{quantity.toFixed(4)}</span>
             <span>
               {selectedCurrency &&
                 fromRawToFormatedWithCode(averagePrice, selectedCurrency)}

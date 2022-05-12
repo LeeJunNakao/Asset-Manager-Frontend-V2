@@ -1,7 +1,7 @@
 import { Currency } from "src/entities/currency";
 
 export const fromRawToFormated = (value: number, decimals: number): number =>
-  value / 10 ** decimals;
+  Number((value / 10 ** decimals).toFixed(decimals));
 
 export const fromRawToFormatedWithCode = (
   value: number,
