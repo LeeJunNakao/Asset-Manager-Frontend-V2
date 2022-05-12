@@ -30,7 +30,6 @@ const RestrictedRoutes = () => {
   }, []);
 
   useEffect(() => {
-    console.log({ initialFetched, selectedCurrency });
     if (initialFetched && selectedCurrency) {
       fetchServices.fetchAssetsPrices(selectedCurrency.code);
     }

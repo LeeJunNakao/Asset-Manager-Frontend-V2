@@ -9,9 +9,8 @@ import { setPortfolios } from "src/store/portfolio";
 import { getAssetsPrices } from "src/http-services/asset/search-asset-price";
 import { Asset } from "src/entities/asset";
 import { toISODate } from "src/utils/parser/date";
-import { useCurrency } from "src/hooks/currency";
 import { useDispatch } from "react-redux";
-import { useAssets } from "./assets";
+import { useAssetPrice, useAssets } from "./assets";
 
 type AssetInfo = [code: string, market?: string, currency?: string];
 
@@ -25,6 +24,7 @@ export const groupAssets = (assets: Asset[]) => {
 export const useFetchData = () => {
   const dispatch = useDispatch();
   const { assets } = useAssets();
+  const { setAssetPricesByCurrency } = useAssetPrice();
 
   const fetchAssetsPrices = async (currencyCode: string) => {
     const groupedAssets = groupAssets(assets);
@@ -46,16 +46,22 @@ export const useFetchData = () => {
           });
 
           return price;
-          // dispatch(addAssetCurrentPrice({ code: assetCode, price }));
-        } catch (error) {
-          // dispatch(addAssetCurrentPrice({ code: assetCode, price: null }));
-        }
+        } catch (error) {}
       }
     );
 
     const prices = await Promise.all(searchPromises);
 
-    console.log("....................", prices);
+    const jointPrices = prices.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+    const parsedPrices = Object.entries(jointPrices!).map(
+      ([assetCode, priceInfo]) => [assetCode, priceInfo.data?.closePrice || 0]
+    );
+    const formatedPrices = {
+      [currencyCode]: Object.fromEntries(parsedPrices),
+    };
+
+    setAssetPricesByCurrency(formatedPrices);
+
     return prices;
   };
 

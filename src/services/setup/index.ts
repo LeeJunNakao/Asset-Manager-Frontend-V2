@@ -27,6 +27,5 @@ export const requestData = async (args: RequestDataArgs) => {
   } finally {
     endLoading();
     notifyFetchEnd();
-    console.log("fiiiiiim!!");
   }
 };

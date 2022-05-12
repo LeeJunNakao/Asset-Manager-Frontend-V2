@@ -3,7 +3,7 @@ import { Asset, AssetEntryRequestPayload } from "src/entities/asset";
 import deepcopy from "deepcopy";
 import { sortAssetEntries } from "src/services/asset/asset-entries";
 
-type AssetsPrices = {
+export type AssetsPrices = {
   [currencyCode: string]: {
     [assetCode: string]: number;
   };
@@ -46,6 +46,12 @@ export const assetSlice = createSlice({
       assets.splice(index, 1);
 
       state.assets = assets;
+    },
+    setCurrencyAssetPrices: (state, action: PayloadAction<AssetsPrices>) => {
+      state.assetsCurrentPrice = {
+        ...state.assetsCurrentPrice,
+        ...action.payload,
+      };
     },
     addAssetCurrentPrice: (
       state,
@@ -119,5 +125,6 @@ export const {
   addAssetEntry,
   updateAssetEntry,
   removeAssetEntry,
+  setCurrencyAssetPrices,
 } = assetSlice.actions;
 export default assetSlice.reducer;
